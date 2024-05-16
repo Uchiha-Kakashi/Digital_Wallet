@@ -1,11 +1,14 @@
 package main.java.com.wallet.entities;
 
+import java.util.Date;
+
 public class Transaction {
     private Integer id;
     private Integer fromUserId;
     private Integer toUserId;
     private Integer amount;
     private Boolean isSuccess;
+    private Date time;
 
     public Integer getId() {
         return id;
@@ -47,8 +50,12 @@ public class Transaction {
         isSuccess = success;
     }
 
+    public Date getTime() { return time; }
+
+    public void setTime(Date time) { this.time = time; }
+
     public String toString(String fromUsername, String toUsername){
         return "Transaction (" + fromUsername + " --> " + toUsername
-                + ") Rs. " + this.getAmount();
+                + ") Rs. " + this.getAmount() + " at " + this.getTime();
     }
 }

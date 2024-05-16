@@ -5,7 +5,10 @@ import main.java.com.wallet.entities.User;
 import main.java.com.wallet.exceptions.UserDoesNotExistException;
 import main.java.com.wallet.repositories.TransactionRepository;
 import main.java.com.wallet.repositories.UserRepository;
+import main.java.com.wallet.utils.TransactionSortUtils;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class TransactionManagementService {
@@ -30,20 +33,28 @@ public class TransactionManagementService {
         transaction.setFromUserId(fromUser.getId());
         transaction.setToUserId(toUser.getId());
         transaction.setSuccess(true);
+        transaction.setTime(new Date());
 
         transactionRepository.saveOrUpdate(transaction);
 
         return transaction.getSuccess();
     }
 
-    public void getAllUserTransactions(String username){
+    public void getUserTransactions(String username, String... query) {
+
+        String sortField = query[0];
+        String filter = null;
+        if(query.length >= 2) filter = query[1];
+
         User existingUser = userRepository.getUserByUsername(username);
         if(existingUser == null) throw new UserDoesNotExistException("User with name - " + username
                 + " does not exist. Get Transactions Activity failed");
 
-        List<Transaction> userTransactions = transactionRepository.getAllTransactions(existingUser.getId());
+        List<Transaction> userTransactions = transactionRepository.getTransactionsForFilter(existingUser.getId(), filter);
 
-        System.out.println("Listing all the transactions for - " + username);
+        Collections.sort(userTransactions, new TransactionSortUtils(sortField));
+
+        System.out.println("Listing the " + username + "'s " + ((filter != null) ? filter:"all") + " transactions");
         for(Transaction transaction : userTransactions){
             String fromUsername = userRepository.findById(transaction.getFromUserId()).getUsername();
             String toUsername = userRepository.findById(transaction.getToUserId()).getUsername();

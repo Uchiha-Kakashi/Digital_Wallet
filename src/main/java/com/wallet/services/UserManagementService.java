@@ -20,7 +20,6 @@ public class UserManagementService {
         return service;
     }
     public void registerUser(String username){
-        // Check if user exists with same name
         User existingUser = userRepository.getUserByUsername(username);
         if(existingUser != null) throw new UsernameAlreadyExistsException("User with name - " + username + " already Exists. Please use different username");
 
@@ -28,7 +27,7 @@ public class UserManagementService {
         Integer userId = userRepository.saveOrUpdate(newUser);
         walletManagementService.createNewWallet(newUser);
 
-        System.out.println("Welcome to Flipkart Wallet - " + username);
+        System.out.println("Welcome to Digital Wallet - " + username);
         System.out.println("Your wallet has been initialized with 0 balance");
     }
 }

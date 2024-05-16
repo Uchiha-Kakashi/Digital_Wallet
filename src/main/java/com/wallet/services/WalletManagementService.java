@@ -76,7 +76,7 @@ public class WalletManagementService {
     }
 
     private Integer addAmountToWallet(User existingUser, Integer amount) {
-        System.out.println("Adding amount to wallet - " + amount);
+
         Wallet existingWallet = walletRepository.getActiveWalletByUserId(existingUser.getId());
         if(existingWallet == null) throw new NoActiveWalletException("No Active wallet exists for user - "  + existingUser.getUsername());
 
@@ -87,7 +87,7 @@ public class WalletManagementService {
     }
 
     private Integer deductAmountFromWallet(User user, Integer amount){
-        System.out.println("Deducting amount from wallet");
+
         Wallet existingWallet = walletRepository.getActiveWalletByUserId(user.getId());
         if(existingWallet == null) throw new NoActiveWalletException("No Active wallet exists for user - "  + user.getUsername());
 
@@ -98,6 +98,9 @@ public class WalletManagementService {
     }
 
     public void sendMoney(String fromUsername, String toUsername, Integer transferAmount){
+
+        if(fromUsername == toUsername) throw new InvalidTransactionException("Choose Appropriate Receiver. Money cannot be sent to Self");
+
         User existingFromUser = userRepository.getUserByUsername(fromUsername);
         if(existingFromUser == null) throw new UserDoesNotExistException("Sender with name - " + fromUsername
                 + " does not exist. Send Money Activity Failed");
@@ -109,7 +112,6 @@ public class WalletManagementService {
         Wallet fromWallet = walletRepository.getActiveWalletByUserId(existingFromUser.getId());
         if(fromWallet.getAmount() < transferAmount) throw new InsufficientBalanceException("Insufficient " +
                 "Balance for the transaction. Transaction Failed");
-
 
         Boolean success = transactionManagementService.createNewTransaction(existingFromUser, existingToUser, transferAmount);
 

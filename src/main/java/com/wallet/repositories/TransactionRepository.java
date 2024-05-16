@@ -32,11 +32,14 @@ public class TransactionRepository implements GenericRepository<Transaction> {
         return this.databaseConnection.getTransactions().get(id);
     }
 
-    public List<Transaction> getAllTransactions(Integer id) {
+    public List<Transaction> getTransactionsForFilter(Integer id, String filter) {
         List<Transaction> allTransactions = this.databaseConnection.getTransactions();
         List<Transaction> retVal = new ArrayList<>();
+
         for(Transaction t : allTransactions){
-            if(t.getToUserId() == id || t.getFromUserId() == id) retVal.add(t);
+            if((filter == null) && (t.getToUserId() == id || t.getFromUserId() == id)) retVal.add(t);
+            else if(filter == "sent" && t.getFromUserId() == id) retVal.add(t);
+            else if(filter == "received" && t.getToUserId() == id) retVal.add(t);
         }
         return retVal;
     }
